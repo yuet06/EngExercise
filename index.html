@@ -952,6 +952,22 @@ body.read-page .topbar{
 .read-w.saved{border-bottom:1px solid #86efac;background:#f0fdf4}
 /* a word the unit's translations map has no meaning for yet */
 .read-w-off{border-bottom-color:#e5e7eb}
+/* a word the unit did NOT put on its clickableWords list: ordinary article text.
+   It keeps its number (data-w) so the highlighter can still mark it, but it has
+   no dotted underline, no hover, no pointer cursor — a tap does nothing at all
+   unless the highlighter is on. Punctuation is not wrapped at all. */
+.read-w-plain{display:inline;vertical-align:baseline;font:inherit;color:inherit;background:none;padding:0 1px;border-radius:5px;cursor:text}
+/* ---------- a sentence the learner can tap for its pattern ----------
+   The dashed line runs under the WHOLE sentence, not under each word. The words
+   inside it keep their own look, their own hover and their own taps, so looking
+   a word up still works anywhere in these sentences; a tap on the sentence
+   itself — the spaces between the words, the punctuation, the dashed line —
+   opens the pattern card. The padding below is what makes that line easy to
+   hit. In highlighter mode the sentence does nothing, exactly like a word that
+   cannot be looked up. */
+.read-sent{border-bottom:1px dashed #d3d7e3;padding:2px 0 4px;border-radius:6px;cursor:pointer}
+.read-sent:hover{border-bottom-color:#a5b4fc;background:rgba(99,102,241,.07)}
+.read-sent.on{background:#eef2ff;border-bottom-color:var(--accent)}
 /* ---------- a marked (highlighted) word ----------
    One class for both pages: a button on the reading page, a plain span on the
    quiz page. It comes AFTER .read-w.on on purpose, so a highlight stays yellow
@@ -978,6 +994,71 @@ body.read-page .topbar{
   font-size:14px;color:var(--muted);
 }
 .read-pop-x:hover{background:#f3f4f6}
+/* ---------- the sentence-pattern SHEET ----------
+   Tapping a dashed sentence opens its pattern, and that card is NOT drawn next
+   to the sentence: there it sat on top of the article, hid the very sentence it
+   was explaining, and swallowed the taps meant for the words around it. It is a
+   SHEET pinned to the bottom of the window instead, so the article stays exactly
+   where it is, stays readable above the sheet, and every word in it stays
+   tappable. Only the bottom of the screen is covered, and the page is given room
+   to scroll clear of it (body.sheet-open). The ✕ sits on the sheet, outside the
+   part that scrolls, so it is always there to press.
+   The parts of the pattern are colour-coded so the shape of the sentence can be
+   taken in at a glance; the colours follow the ORDER of the parts, so they work
+   for any pattern written in a unit. */
+.read-sheet{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:0;z-index:30;
+  width:min(720px,100%);max-height:44vh;
+  display:flex;flex-direction:column;
+  background:#fff;border:1px solid var(--line);border-bottom:0;
+  border-radius:18px 18px 0 0;box-shadow:0 -14px 34px rgba(15,23,42,.18);
+  padding:14px 18px 16px;
+}
+.read-sheet .read-pop-w{font-size:16px;line-height:1.55;padding-right:26px;color:#1f2937}
+.read-sheet .read-pop-x{position:absolute;top:8px;right:10px;padding:2px 8px;border-radius:8px;
+  background:#fff;font-size:15px;color:var(--muted)}
+.read-sheet .read-pop-x:hover{background:#f3f4f6}
+/* only the card's own content scrolls; the ✕ above it never moves */
+.sheet-body{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:9px;align-items:stretch}
+/* the room the sheet needs, so the last line of the article can be scrolled out
+   from behind it and read in full */
+body.sheet-open .wrap{padding-bottom:52vh}
+@media (max-width:700px){
+  .read-sheet{max-height:50vh;border-radius:16px 16px 0 0}
+}
+.sent-pat{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:1px 0}
+.sent-part{border-radius:8px;padding:3px 8px;font-size:15px;font-weight:800;white-space:nowrap}
+.sp-1{background:#dbeafe;color:#1d4ed8}
+.sp-2{background:#dcfce7;color:#15803d}
+.sp-3{background:#fef3c7;color:#b45309}
+.sp-4{background:#ede9fe;color:#6d28d9}
+.sp-5{background:#ffe4e6;color:#be123c}
+.sp-plus{color:#a3a9b8;font-size:14px;font-weight:800}
+.sent-zh{margin:0;font-size:14px;line-height:1.75;font-weight:600;color:#3b4256}
+.sent-eg{margin:0;font-size:14px;line-height:1.6;font-weight:700;color:#1f2937}
+.sent-eg-tag{margin-right:5px;font-size:12px;color:var(--muted)}
+/* ---------- the parts of a longer card ----------
+   A sentence entry may carry more than one part: a headed block, the "so / so
+   that" rows to compare, and a few tips at the end. The short cards leave all of
+   this out and are drawn exactly as before. */
+.sent-box{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.sent-head{font-size:12px;font-weight:800;color:var(--muted)}
+.sent-cmp{border-left:3px solid var(--line);border-radius:8px;padding:6px 9px;background:#f8fafc}
+.sent-cmp.cmp-a{border-left-color:#86efac;background:#f0fdf4}
+.sent-cmp.cmp-b{border-left-color:#fcd34d;background:#fffbeb}
+.cmp-head{margin:0;font-size:14px;line-height:1.6;font-weight:700;color:#1f2937}
+.cmp-word{font-weight:800;color:#111827}
+.cmp-eq{margin:0 5px;font-weight:800;color:var(--muted)}
+.cmp-eg{margin:4px 0 0;font-size:14px;line-height:1.6;font-weight:600;color:#334155}
+.cmp-cn{margin:2px 0 0;font-size:13px;line-height:1.6;font-weight:600;color:#64748b}
+/* the bit of each example that the card is about */
+.cmp-hl{background:rgba(253,224,71,.5);border-radius:4px;padding:0 2px;font-weight:800}
+.sent-tip,.sent-list{margin:0;padding-left:18px;font-size:14px;line-height:1.8;font-weight:600;color:#3b4256}
+.sent-tip li,.sent-list li{margin:0}
+/* a list of examples, each with its Chinese underneath */
+.sent-ex{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.sent-ex li{margin:0}
+.sent-eg-cn{margin:1px 0 0;font-size:13px;line-height:1.6;font-weight:600;color:#64748b}
 .read-actions{display:flex;justify-content:center;margin-top:20px}
 
 /* ---------- page 2: the quiz ----------
@@ -1080,8 +1161,11 @@ body.read-screen .topbar{flex:0 0 auto;margin-bottom:10px}
   background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px 12px;resize:vertical;
 }
 .short-inp:focus{outline:none;border-color:var(--accent)}
-/* fill the blanks: one small box per gap, in the sentence itself */
-.blank-text{margin:0;font-size:16px;line-height:2.1}
+/* fill the blanks: one small box per gap, in the sentence itself.
+   "pre-line" honours the paragraph breaks a report may carry (the article and
+   the question text are shown the same way), while still collapsing runs of
+   spaces and wrapping long lines normally. */
+.blank-text{margin:0;font-size:16px;line-height:2.1;white-space:pre-line}
 .blank-inp{
   font-family:inherit;font-size:15px;font-weight:700;color:var(--text);text-align:center;
   width:8.5em;background:#fff;border:2px solid var(--line);border-radius:9px;padding:4px 6px;
@@ -8705,7 +8789,7 @@ const PREP_SCENES = [
    ================================================================== */
 const READING_PHRASES = {
   "put out": "撲滅",
-  "as well as": "除了/和",
+  "as well as": "除了",
   "find out": "找出",
   "fire station": "消防局",
   "fire stations": "消防局",
@@ -8794,10 +8878,180 @@ const READING_UNITS = [
       "____(iii)____\nWriting, like all skills, needs practice. The more you write, the better your writing gets. Try to write something every day. It doesn't need to be a story. It could be a school essay, a project about something that interests you, an e-mail to a friend, anything!\n\n" +
       "____(iv)____\nIt feels great to write the last full stop, but that doesn't mean your writing is finished. Look at it again - how can you make it better? Are your spellings and grammar correct? Can you improve your characters? Get other people's views on your writing. Ask a friend, teacher or parent to read it. There is always room for improvement!\n\n" +
       "Good luck with your writing! I hope to read your work one day!",
+    /* ---------- THE WORDS THE LEARNER CAN TAP ----------
+       Only the words on THIS list are tappable in this unit. Each one is
+       written exactly as it should be looked up, with its meaning next to it:
+       tapping the word shows that meaning and says the word out loud.
+       Every other word in the article is just text. It can still be
+       highlighted, but a tap does nothing.
+
+       A phrase works here too — write it with spaces, e.g.
+           "writer's notebook": "寫作筆記本"
+       and the whole phrase becomes one tappable button.
+
+       Want the whole article tappable again? Delete the clickableWords list
+       from this unit (that is how "Reading 2" works). */
+    clickableWords: {
+      "magazine": "雜誌",
+      "article": "文章",
+      "story": "故事",
+      "write": "寫",
+      "writer": "作家",
+      "writing": "寫作",
+      "improve": "改善",
+      "difficult": "困難的",
+      "whatever": "任何事物",
+      "whenever": "無論何時",
+      "own": "自己的",
+      "unusual": "不尋常的",
+      "hobbies": "嗜好",
+      "notebook": "筆記本",
+      "forget": "忘記",
+      "person": "人",
+      "practice": "練習",
+      "essay": "文章",
+      "project": "專題",
+      "interests": "興趣",
+      "spellings": "拼寫",
+      "grammar": "文法",
+      "characters": "角色",
+      "views": "意見",
+      "improvement": "改善",
+      /* ---------- PHRASES ----------
+         Written with spaces, several words each: the whole phrase becomes ONE
+         tappable button, spoken and highlighted as one.
+         "go well with" is here for the wording "go well WITH"; the article
+         itself says "go well TOGETHER" in paragraph (i)
+         ("what words go well together"), so that phrase is listed as well and
+         carries the same meaning. The matcher tries the longer one first, so
+         each wording is caught whichever the article uses. */
+      "as well as": "除了",
+      "go well with": "搭配得好",
+      "go well together": "搭配得好"
+    },
+    /* ---------- SENTENCE PATTERNS the learner can tap ----------
+       Each entry marks ONE sentence of this article: that sentence is drawn with
+       a dashed line under it, and a tap on the sentence (not on one of its
+       words — those still show their meaning as usual) opens a small card with
+       the pattern, an explanation and one more example.
+
+         sentence  the sentence as it appears in the article. The closing full
+                   stop may be left on: it is ignored when the sentence is looked
+                   for, because two of these run on with a comma in the article
+                   ("...what you know, so you need to know...").
+         pattern   the shape of the sentence, written with " + " between its
+                   parts. EACH PART IS COLOURED IN ORDER, part 1 blue, part 2
+                   green, and so on, so no extra setting is needed here.
+         explain   the Chinese explanation shown under the pattern.
+         example   one more sentence using the same pattern.
+
+       A unit with no sentencePatterns (like "Reading 2") is drawn exactly as
+       before — no sentence is marked and nothing else changes. */
+    sentencePatterns: [
+      {
+        sentence: "It is difficult to write well if you don't read.",
+        pattern: "It + is + difficult + to + 動詞",
+        explain: "「It」在這裡只是一個「佔位」的主詞，真正的主詞是後面的「to write well」。" +
+                 "意思是：如果你不閱讀，就很難寫得好。",
+        example: "It is easy to make a cake."
+      },
+      {
+        sentence: "Read whatever you can, whenever you can.",
+        title: "whatever / whenever",
+        patternHead: "The pattern in this sentence",
+        pattern: "動詞 + whatever + 主詞 + 動詞 / whenever + 主詞 + 動詞",
+        explain: [
+          "whatever = 任何……的東西（anything that...）",
+          "whenever = 任何……的時候（any time that...）",
+          "這句話的意思是：任何你能讀的東西都去讀，任何你能讀的時候都去讀。" +
+          "也就是「隨時隨地，只要有機會就閱讀」。"
+        ],
+        explainHl: ["whatever", "whenever"],
+        exampleHead: "Examples",
+        examples: [
+          { en: "Eat whatever you like.", enHl: "whatever", cn: "吃任何你喜歡的東西。" },
+          { en: "Come whenever you are free.", enHl: "whenever", cn: "你有空的時候隨時來。" }
+        ]
+      },
+      {
+        sentence: "It's best to write about what you know.",
+        pattern: "It + is + best + to + 動詞",
+        explain: "跟上一句一樣，「It」是形式主詞，真正的主詞是「to write about what you know」。" +
+                 "意思是：最好寫你熟悉的事物。",
+        example: "It is fun to play with friends."
+      },
+      /* ---------- a longer card: three parts ----------
+         This one is about a pair of words that students mix up, so the card
+         carries more than one part. Only the entries that ask for them get
+         them — the entries above and below are drawn exactly as before.
+           title        the heading of the card (without it, the sentence)
+           patternHead  a small label over the pattern
+           explainHl    the bit of the explanation to highlight (a word, or a
+                        list of words; leave it out for no highlight)
+           compareHead  a label over the comparison
+           compare      the rows to compare. Each row:
+                          word   the word itself (shown first, in bold)
+                          zh     what it means
+                          en     an English example, with enHl highlighted
+                          cn     the Chinese of that example, with cnHl highlighted
+           tipHead/tip  a label and the bullet lines under it
+           tipBold      which words to highlight in those lines */
+      {
+        sentence: "Start a writer's notebook so that you don't forget any of your ideas.",
+        title: "so vs. so that",
+        patternHead: "The pattern in this sentence",
+        pattern: "動詞 + so that + 主詞 + 動詞",
+        explain: "「so that」表示「為了……」、「以便……」，後面接的是「目的」。這句話的意思是：" +
+                 "開始寫一本作家筆記本，以便你不會忘記任何想法。",
+        explainHl: "以便",
+        compareHead: "so vs. so that (the key difference)",
+        compare: [
+          { word: "so that",
+            zh: "為了……、以便……（表示「目的」，後面接你想達成的事）",
+            en: "I study hard so that I can pass the exam.", enHl: "so that",
+            cn: "我努力讀書，為了能通過考試。", cnHl: "為了" },
+          { word: "so",
+            zh: "所以（表示「結果」，前面是原因，後面是結果）",
+            en: "I studied hard, so I passed the exam.", enHl: "so",
+            cn: "我努力讀書，所以我通過了考試。", cnHl: "所以" }
+        ],
+        tipHead: "Quick tip for students",
+        tipBold: ["so that", "so"],
+        tip: [
+          "如果想表達「為了……」，用 so that。",
+          "如果想表達「因為……所以……」，用 so。",
+          "兩者不能混用。"
+        ]
+      },
+      {
+        sentence: "The more you write, the better your writing gets.",
+        title: "The more..., the more...",
+        patternHead: "The pattern in this sentence",
+        pattern: "The + 比較級 + 主詞 + 動詞, the + 比較級 + 主詞 + 動詞",
+        explain: "「越……，就越……」。表示一方增加，另一方也跟著增加。" +
+                 "這句話的意思是：你寫得越多，你的寫作就會變得越好。",
+        explainHl: "越……，就越……",
+        exampleHead: "Examples",
+        examples: [
+          { en: "The more you practice, the better you will be.", enHl: "The more",
+            cn: "你練習得越多，你就會越好。" },
+          { en: "The more you read, the more you know.", enHl: "The more",
+            cn: "你讀得越多，你知道的就越多。" }
+        ]
+      },
+      {
+        sentence: "It feels great to write the last full stop.",
+        pattern: "It + feels + great + to + 動詞",
+        explain: "「It」是形式主詞，真正的主詞是「to write the last full stop」。" +
+                 "意思是：寫下最後一個句號，感覺很棒。",
+        example: "It feels good to help others."
+      }
+    ],
     /* Every word the article can be tapped for, in Traditional Chinese.
        "i"…"iv" are the paragraph markers (i) (ii) (iii) (iv); the capital "I"
        is the pronoun, which is why both are here — the look-up prefers the
-       exact spelling before it tries a lower-case one. */
+       exact spelling before it tries a lower-case one.
+       The list above is asked FIRST, so it wins where the two disagree. */
     translations: {
       "I": "我",
       "i": "（一）", "ii": "（二）", "iii": "（三）", "iv": "（四）",
@@ -8934,6 +9188,38 @@ const READING_UNITS = [
         "firefighters! Firefighters usually work in fire stations. When there is a fire, they rush to the " +
         "place with the fire in fire engines.</p>" +
       "</div>",
+    /* ---------- THE WORDS THE LEARNER CAN TAP (this unit) ----------
+       Only the words on THIS list are tappable here. A phrase is written with
+       spaces between its words and becomes ONE tappable button: the whole
+       phrase is shown, spoken and highlighted together — "back cover",
+       "packed with", "space shuttle", "on fire", "put out", "fire stations",
+       "fire engines". Those four that are not in the shared READING_PHRASES
+       list work because this list is read too (see readUnitPhrases).
+
+       The meanings are the ones THIS passage needs:
+         "covers"  is 涵蓋 — the book is about these jobs, not 封面 (a book cover)
+         "rush"    is 趕往 — the firefighters go quickly to the fire,
+                            not "hurry up and be careless"
+         "on fire" is one phrase (著火), so the bare word "fire" stays ordinary text */
+    clickableWords: {
+      "back cover": "封底",
+      "packed with": "充滿",
+      "information": "資訊",
+      "lively": "生動的",
+      "photographs": "照片",
+      "edition": "版本",
+      "covers": "涵蓋",
+      "different": "不同的",
+      "ballet": "芭蕾",
+      "space shuttle": "太空梭",
+      "science": "科學",
+      "experiments": "實驗",
+      "on fire": "著火",
+      "put out": "撲滅",
+      "fire stations": "消防局",
+      "rush": "趕往",
+      "fire engines": "消防車"
+    },
     /* Every word the article can be tapped for, in Traditional Chinese. */
     translations: {
       "a": "一個", "about": "關於", "an": "一個", "and": "和", "answers": "答案", "are": "是",
@@ -9013,6 +9299,123 @@ const READING_UNITS = [
           "(iii) Ballet dancers": "A",
           "(iv) Farmers": "D"
         }
+      }
+    ]
+  },
+  {
+    id: "reading-plet-6a-at-r7",
+    title: "Reading 3",
+    icon: "🧞",
+    article:
+      "Tommy is reading a story. Read the story carefully, choose the best answers for " +
+      "Questions 1- 5 and complete Question 6.\n\n" +
+      "Polly had a dream every night. Her dreams were never boring. She thought dreaming was " +
+      "like having her own cinema in her head.\n\n" +
+      "Polly sometimes became another person in her dreams. Sometimes she had exciting jobs. " +
+      "Often she was an astronaut or a doctor or a pop singer. She was not always a good " +
+      "person. Sometimes she was a wicked witch or an ugly pirate or a frightening ghost. " +
+      "Sometimes she got into trouble, but everything was OK when she woke up.\n\n" +
+      "Last night Polly's dream was about a genie who lived in her school bag. The genie " +
+      "appeared after Polly rubbed the front of her bag. Like all good genies he granted " +
+      "three wishes every day, but he would only grant them to Polly. Polly could tell the " +
+      "genie what she wanted and the genie would make her wishes come true.\n\n" +
+      "Polly was usually a shy girl, but having her own genie made her very popular with her " +
+      "classmates at school. At lunchtime every day, the children wanted to see Polly's " +
+      "genie. They all wanted the genie to grant their wishes too. Billy wanted a mobile " +
+      "phone that would never break down. Harry wished that he was very good-looking. Patsy " +
+      "wished for a bar of chocolate that never ran out. Polly passed on her classmates' " +
+      "wishes and her genie granted them.\n\n" +
+      "Everything was going well until the genie became annoyed. He said the children were " +
+      "making too many selfish wishes. The genie would only grant three last wishes and only " +
+      "Polly could make the wishes. After he had granted Polly's wishes, he would go away " +
+      "forever.\n\n" +
+      "The next day the genie appeared and asked, 'Polly, what are your last three wishes?' " +
+      "Polly was nervous, 'First I wish for ...' Suddenly Polly woke up!",
+    /* ---------- THE WORDS THE LEARNER CAN TAP ----------
+       Only the words on THIS list are tappable here, exactly as in the other
+       units. A key of several words is a PHRASE and becomes one tappable unit:
+       "got into trouble", "come true", "break down", "ran out", "passed on",
+       "going well". The meanings are the ones THIS passage needs — "thought" is
+       the past tense of "think" (認為), "last" always means 最後的 here, and
+       "grant"/"granted" both mean 應允. */
+    clickableWords: {
+      "thought": "認為",
+      "own": "自己的",
+      "cinema": "電影院",
+      "wicked": "邪惡的",
+      "pirate": "海盜",
+      "frightening": "可怕的",
+      "got into trouble": "惹上麻煩",
+      "last": "最後的",
+      "genie": "精靈",
+      "appeared": "出現",
+      "rubbed": "摩擦",
+      "granted": "應允",
+      "wishes": "願望",
+      "grant": "應允",
+      "come true": "成真",
+      "break down": "壞掉",
+      "ran out": "用完",
+      "passed on": "轉達",
+      "going well": "進展順利",
+      "until": "直到",
+      "annoyed": "生氣",
+      "selfish": "自私的",
+      "forever": "永遠",
+      "nervous": "緊張的"
+    },
+    /* A unit may also bring a translations map for words that are NOT on its
+       clickableWords list — but nothing else in this article is tappable, so
+       there is nothing to add here. */
+    questions: [
+      {
+        type: "mcq",
+        q: "1 Which of the following is TRUE about Polly?",
+        options: ["A. Polly enjoyed having dreams.", "B. Polly seldom had dreams.",
+                  "C. Polly was always a little girl in her dreams.",
+                  "D. Polly always watched a film before she went to bed."],
+        answer: 0
+      },
+      {
+        type: "mcq",
+        q: "2 Why did Polly become popular with her classmates?",
+        options: ["A. She was outgoing.", "B. She had a lot of snacks.",
+                  "C. She could help to make their wishes come true.", "D. She was good-looking."],
+        answer: 2
+      },
+      {
+        type: "mcq",
+        q: "3 Why did the genie decide to leave Polly?",
+        options: ["A. He thought Polly was too greedy.",
+                  "B. He thought Polly's classmates were too greedy.",
+                  "C. He was bored.", "D. He was frightened."],
+        answer: 1
+      },
+      {
+        type: "mcq",
+        q: "4 What will be the ending of the story?",
+        options: ["A. Polly tells the genie her three wishes.",
+                  "B. Polly is frightened so she calls the police.",
+                  "C. Polly sets off to find the genie.",
+                  "D. Polly is disappointed because she wants to find out what she wished for."],
+        answer: 3
+      },
+      {
+        type: "mcq",
+        q: "5 What is the best title for this story?",
+        options: ["A. Polly and her Classmates", "B. Polly's Dream", "C. The Silly Genie",
+                  "D. A Romantic Dream"],
+        answer: 1
+      },
+      {
+        type: "fill_blanks",
+        q: "6 Tommy is writing a report about the story. Finish his report and use only ONE word for each blank.",
+        text: "This story is about a girl and a genie in her bag who can make her wishes come true.\n\n" +
+              "The girl's (i) [blank] all want the genie to help them too. They make many wishes " +
+              "every day until one day, the genie is not happy anymore. He decides to (ii) [blank] " +
+              "three more wishes to Polly and leave.\n\n" +
+              "When Polly is making her last wish, she wakes up from her sleep!",
+        answers: ["classmates", "grant"]
       }
     ]
   }
@@ -11603,39 +12006,132 @@ const READING_UNITS = [
   function readPhraseKey(s) {
     return String(s == null ? "" : s).toLowerCase().replace(/\s+/g, " ").trim();
   }
-  /* The phrases from READING_PHRASES, ready to match the article with: one
-     anchored pattern each, the longest phrase first so "as well as" wins over
-     a shorter phrase that starts the same way. A phrase of one word is skipped
-     — a single word belongs in the unit's own translations map. */
+
+  /* ---------- which words can be tapped ----------
+     A unit may bring its OWN list of the words worth learning:
+
+         clickableWords: { "magazine": "雜誌", "writer's notebook": "筆記本" }
+
+     The keys are the words (or whole phrases) that are tappable and the values
+     are what they mean, so the one list does both jobs: it says WHAT the learner
+     may tap and WHAT they are told. The key may be a phrase — several words with
+     spaces between them — and then the whole phrase is one tappable button.
+
+     Everything else in the article is ordinary text: it can still be
+     highlighted, but tapping it does nothing.
+
+     A unit that brings NO such list is left exactly as it was — every word is
+     tappable — so a unit written before this existed keeps working, and
+     "Reading 2" is untouched. */
+  function readWordList(unit) {
+    var map = unit && unit.clickableWords;
+    return (map && typeof map === "object" && !Array.isArray(map)) ? map : null;
+  }
+  function readHasWordList(unit) { return !!readWordList(unit); }
+  /* the meaning from the unit's own list, or null when the word is not on it.
+     Case does not matter, so a word at the start of a sentence is found too
+     ("Magazine" finds the list's "magazine"). */
+  function readClickableMeaning(unit, word) {
+    var map = readWordList(unit);
+    if (!map) return null;
+    var w = String(word == null ? "" : word);
+    if (readHas(map, w)) return map[w];
+    var lower = w.toLowerCase();
+    if (readHas(map, lower)) return map[lower];
+    var cap = lower.charAt(0).toUpperCase() + lower.slice(1);
+    if (readHas(map, cap)) return map[cap];
+    /* a phrase: looked up with its spaces tidied and its case flattened, so
+       "As  well  as" finds the list's "as well as" */
+    var key = readPhraseKey(w);
+    if (!key) return null;
+    var keys = Object.keys(map);
+    for (var i = 0; i < keys.length; i++) {
+      if (readPhraseKey(keys[i]) === key) return map[keys[i]];
+    }
+    return null;
+  }
+  /* is this word tappable in this unit? No list at all means "all of them". */
+  function readIsClickable(unit, word) {
+    if (!readHasWordList(unit)) return true;
+    return readClickableMeaning(unit, word) !== null;
+  }
+  /* One phrase, ready to match the article with: an anchored pattern of its
+     words with any run of spaces between them, so "on fire" also matches
+     "on   fire". A phrase of ONE word is skipped — a single word belongs in
+     the unit's own translations map, not in a phrase list. */
+  function readPhrasePattern(key) {
+    var words = String(key).trim().split(/\s+/).filter(Boolean);
+    if (words.length < 2) return null;
+    var pattern = words.map(function (w) {
+      return w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }).join("\\s+");
+    return { key: readPhraseKey(key), re: new RegExp("^" + pattern + "\\b", "i") };
+  }
+  /* The shared phrases, from READING_PHRASES, longest first so "as well as"
+     wins over a shorter phrase that starts the same way. */
   var READ_PHRASES = (function () {
     var out = [];
     var src = (typeof READING_PHRASES === "object" && READING_PHRASES) || {};
     Object.keys(src).forEach(function (key) {
-      var words = String(key).trim().split(/\s+/).filter(Boolean);
-      if (words.length < 2) return;
-      var pattern = words.map(function (w) {
-        return w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      }).join("\\s+");
-      out.push({ key: readPhraseKey(key), re: new RegExp("^" + pattern + "\\b", "i") });
+      var p = readPhrasePattern(key);
+      if (p) out.push(p);
     });
     out.sort(function (a, b) { return b.key.length - a.key.length; });
     return out;
   })();
+  /* ---------- the phrases ONE UNIT can match ----------
+     The shared list above, PLUS the multi-word keys of the unit's own
+     clickableWords list. That is what lets a unit use a phrase of its own —
+     "back cover", "packed with", "space shuttle" — without every other unit
+     inheriting it from the shared dictionary. A phrase held by both lists is
+     matched once, and the whole thing is sorted longest first so "fire
+     stations" is tried before "fire station". Built once per unit, then kept. */
+  var READ_UNIT_PHRASES = {};
+  function readUnitPhrases(unit) {
+    var id = (unit && unit.id) ? String(unit.id) : "";
+    if (id && READ_UNIT_PHRASES[id]) return READ_UNIT_PHRASES[id];
+    var list = READ_PHRASES.slice();
+    var seen = {};
+    list.forEach(function (p) { seen[p.key] = true; });
+    var map = readWordList(unit);
+    if (map) {
+      Object.keys(map).forEach(function (k) {
+        var p = readPhrasePattern(k);
+        if (p && !seen[p.key]) { seen[p.key] = true; list.push(p); }
+      });
+    }
+    list.sort(function (a, b) { return b.key.length - a.key.length; });
+    if (id) READ_UNIT_PHRASES[id] = list;
+    return list;
+  }
   /* starting at a word, is one of the phrases there? Returns it as written in
-     the article ("As well as"), so the button says what the page says. */
-  function readPhraseAt(text, index) {
+     the article ("As well as"), so the button says what the page says.
+     A unit that brings a clickableWords list only uses the phrases that are ON
+     that list — whether they come from the shared dictionary or from the unit's
+     own list: a phrase the unit did not ask for is passed over, so its separate
+     words are drawn one by one (and can be highlighted one by one).
+     A longer phrase that is not on the list never hides a shorter one that is,
+     because the loop carries on to the next phrase instead of giving up. */
+  function readPhraseAt(unit, text, index) {
     var rest = String(text).slice(index);
-    for (var i = 0; i < READ_PHRASES.length; i++) {
-      var m = READ_PHRASES[i].re.exec(rest);
-      if (m) return m[0];
+    var phrases = readUnitPhrases(unit);
+    for (var i = 0; i < phrases.length; i++) {
+      var m = phrases[i].re.exec(rest);
+      if (!m) continue;
+      if (!readIsClickable(unit, m[0])) continue;   /* not on this unit's list */
+      return m[0];
     }
     return null;
   }
-  /* The word as written, then in lower case, then with a capital first
-     letter — so "Went", "went" and "WENT" all find the map's "went". The
-     unit's own map is asked first; a phrase from READING_PHRASES is the
-     fallback, so one entry there serves every unit. */
+  /* The unit's own clickableWords list is asked FIRST — it is the list written
+     for this passage, so it wins wherever the two disagree. Then the unit's
+     translations map: the word as written, then in lower case, then with a
+     capital first letter, so "Went", "went" and "WENT" all find "went". A
+     phrase from READING_PHRASES is the last fallback, so one entry there
+     serves every unit that has no list of its own. */
   function readMeaning(unit, word) {
+    var own = readClickableMeaning(unit, word);
+    if (own !== null) return own;
     var map = (unit && unit.translations) || {};
     var w = String(word == null ? "" : word);
     if (readHas(map, w)) return map[w];
@@ -11683,9 +12179,14 @@ const READING_UNITS = [
     }
     var hint = document.getElementById("readHint");
     if (hint) {
-      hint.textContent = state.readHighlighter
-        ? "Highlighter on — tap a word to mark or unmark it"
-        : "Tap any word to see its meaning";
+      if (state.readHighlighter) {
+        hint.textContent = "Highlighter on — tap a word to mark or unmark it";
+      } else if (readHasWordList(readUnit())) {
+        /* this unit only lets some words be looked up, so the hint says which */
+        hint.textContent = "Tap a dotted-line word to see its meaning";
+      } else {
+        hint.textContent = "Tap any word to see its meaning";
+      }
     }
   }
   /* mark or unmark one word. The page is NOT redrawn: the class is put on the
@@ -11696,7 +12197,10 @@ const READING_UNITS = [
     var at = marks.indexOf(wordNo);
     var adding = at === -1;
     if (adding) marks.push(wordNo); else marks.splice(at, 1);
-    var all = appEl.querySelectorAll(".read-w, .read-hl");
+    /* every drawn word, tappable or not: the highlighter ignores the unit's
+       clickableWords list, so a word that cannot be looked up can still be
+       marked. */
+    var all = appEl.querySelectorAll(".read-w, .read-w-plain, .read-hl");
     for (var i = 0; i < all.length; i++) {
       if (String(all[i].getAttribute("data-w")) === String(wordNo)) {
         if (adding) all[i].classList.add("read-hl"); else all[i].classList.remove("read-hl");
@@ -12070,12 +12574,23 @@ const READING_UNITS = [
     }
     return out + esc(text.slice(last));
   }
-  /* one word: a button on the reading page, a plain span on the quiz page, and
-     a highlighted one keeps its class either way */
+  /* one word, drawn one of three ways:
+       reading page, on the unit's clickableWords list -> a tappable button
+       reading page, NOT on the list                   -> ordinary text, but it
+          keeps its number (data-w) so the highlighter can still mark it; a tap
+          does nothing unless the highlighter is on
+       quiz page                                       -> plain text, and a
+          highlighted word keeps its mark either way.
+     The unit's list — not the markup — is what decides: readOpenWord asks
+     readIsClickable again before it looks anything up. */
   function readWordHTML(unit, tappable, word, no) {
     var marked = readIsMarked(no);
     if (!tappable) {
       return marked ? '<span class="read-hl" data-w="' + no + '">' + esc(word) + '</span>' : esc(word);
+    }
+    if (!readIsClickable(unit, word)) {
+      return '<span class="read-w-plain' + (marked ? ' read-hl' : '') + '"' +
+        ' data-act="read-mark" data-w="' + no + '">' + esc(word) + '</span>';
     }
     var meaning = readMeaning(unit, word);
     var cls = "read-w" + (meaning ? "" : " read-w-off") +
@@ -12085,20 +12600,50 @@ const READING_UNITS = [
       ' data-word="' + esc(word) + '" data-w="' + no + '"' +
       ' aria-label="' + esc(word) + ' — tap for the meaning">' + esc(word) + '</button>';
   }
+  /* ---------- the sentences a unit wants explained ----------
+     A unit may bring sentencePatterns (see READING_UNITS). Where is each one in
+     the article? The closing full stop is optional: two of the three sentences
+     run on with a comma in the article ("...what you know, so you need to know
+     ..."), so the sentence is looked for without its final punctuation and what
+     is found is used as it stands. A sentence that is not in the article is
+     quietly left alone — nothing breaks, nothing is marked. */
+  function readSentenceSpans(source, unit) {
+    var list = (unit && unit.sentencePatterns) || [];
+    var text = String(source);
+    var out = [];
+    for (var i = 0; i < list.length; i++) {
+      var body = String(list[i] && list[i].sentence != null ? list[i].sentence : "")
+        .replace(/[.!?]+\s*$/, "");
+      if (!body) continue;
+      var at = text.indexOf(body);
+      if (at === -1) continue;
+      var end = at + body.length;
+      /* the dashed line runs on to the punctuation the article puts there (a
+         full stop, or the comma of "…what you know, so…"), so it never stops
+         short of the end of the sentence */
+      if (/[.!?,;:]/.test(text.charAt(end))) end++;
+      out.push({ at: at, end: end, i: i });
+    }
+    /* in the order they appear, and never overlapping each other */
+    out.sort(function (a, b) { return a.at - b.at; });
+    var clean = [], last = 0;
+    out.forEach(function (s) { if (s.at >= last) { clean.push(s); last = s.end; } });
+    return clean;
+  }
   function readArticleHTML(unit, tappable) {
     var text = String((unit && unit.article) || "");
     var wordNo = -1;
     /* Words are numbered in reading order across the WHOLE article, so the
        numbers on page 2 are the numbers from page 1 and the highlights line up.
-       Each block is scanned over a copy with the tags blanked out ("b", "i",
+       Each run is scanned over a copy with the tags blanked out ("b", "i",
        "p"… can never be mistaken for words); the copy is the same length, so
        every position still points at the right place in the real text. */
-    function scanBlock(source) {
+    function scanRun(source) {
       var scan = String(source).replace(READ_TAG, readTagBlank);
       var html = "", last = 0, m;
       READ_WORD.lastIndex = 0;
       while ((m = READ_WORD.exec(scan)) !== null) {
-        var phrase = readPhraseAt(source, m.index);
+        var phrase = readPhraseAt(unit, source, m.index);
         var word = phrase || m[0];
         html += readArticleMarkup(source.slice(last, m.index));  /* text, punctuation, tags, breaks */
         last = m.index + word.length;
@@ -12107,6 +12652,25 @@ const READING_UNITS = [
         html += readWordHTML(unit, tappable, word, wordNo);
       }
       return html + readArticleMarkup(source.slice(last));       /* what is left after the last word */
+    }
+    /* An explainable sentence is drawn inside ONE wrapper of its own, so the
+       dashed line can run under the whole sentence while the words inside keep
+       their own buttons and their own taps. The text is untouched: a wrapper
+       adds nothing to what is read on screen. On the quiz page there is no
+       wrapper at all — nothing there is tappable. */
+    function scanBlock(source) {
+      var spans = tappable ? readSentenceSpans(source, unit) : [];
+      if (!spans.length) return scanRun(source);
+      var html = "", last = 0;
+      spans.forEach(function (s) {
+        html += scanRun(String(source).slice(last, s.at)) +
+          '<span class="read-sent" data-act="read-sent" data-sent="' + s.i + '"' +
+          ' role="button" tabindex="0" aria-label="' +
+          esc("Sentence pattern: " + String(source).slice(s.at, s.end)) + '">' +
+          scanRun(String(source).slice(s.at, s.end)) + '</span>';
+        last = s.end;
+      });
+      return html + scanRun(String(source).slice(last));
     }
     /* the article brings its own frames and paragraphs: leave them alone */
     if (READ_BLOCK.test(text)) return scanBlock(text);
@@ -12162,12 +12726,26 @@ const READING_UNITS = [
     readPopClose();
   }
 
-  /* ---------- the word popup ---------- */
+  /* ---------- the two popups ----------
+     One #readPop serves both, and there are two shapes of it:
+       the WORD card   — small, drawn under the word it belongs to
+       the SHEET       — a sentence's pattern, pinned to the bottom of the window
+     readPopClose() takes it away; readPopLetGo() only forgets what it was opened
+     from, which is what lets a sheet that is already up be filled again in place
+     instead of a second card being stacked on top of the first. */
   function readPopClose() {
     var pop = document.getElementById("readPop");
     if (pop && pop.parentNode) pop.parentNode.removeChild(pop);
+    readPopLetGo();
+  }
+  function readPopLetGo() {
     var open = appEl.querySelector(".read-w.on");
     if (open) open.classList.remove("on");
+    var sent = appEl.querySelector(".read-sent.on");
+    if (sent) sent.classList.remove("on");
+    /* the sheet is drawn on the app root, so the room the page was leaving for it
+       has to be taken back here as well */
+    document.body.classList.remove("sheet-open");
     state.readWord = null;
   }
   function readPopHTML(word, meaning) {
@@ -12183,24 +12761,43 @@ const READING_UNITS = [
             ' data-word="' + esc(word) + '" data-chinese="' + esc(meaning) + '"' +
             (meaning ? '' : ' disabled') + '>＋ Add to My Words</button>');
   }
-  /* (re)draw the popup under a word, kept inside the article card */
-  function readShowPop(btn, word, meaning) {
+  /* (re)draw the WORD card under the word it belongs to, inside the article */
+  function readShowPop(btn, html) {
     var card = btn.closest(".read-article");
     if (!card) return;
     var pop = document.getElementById("readPop");
     if (!pop) {
       pop = document.createElement("div");
       pop.id = "readPop";
-      pop.className = "read-pop";
       card.appendChild(pop);
     }
-    pop.innerHTML = readPopHTML(word, meaning);
+    pop.className = "read-pop";
+    pop.innerHTML = html;
     var popW = pop.offsetWidth || 220;
     var cardW = card.clientWidth || 320;
     var x = (btn.offsetLeft || 0) + (btn.offsetWidth || 0) / 2;
+    var y = (btn.offsetTop || 0) + (btn.offsetHeight || 0) + 8;
     x = Math.max(popW / 2 + 6, Math.min(x, cardW - popW / 2 - 6));
     pop.style.left = Math.round(x) + "px";
-    pop.style.top = Math.round((btn.offsetTop || 0) + (btn.offsetHeight || 0) + 8) + "px";
+    pop.style.top = Math.round(y) + "px";
+  }
+  /* ---------- the sheet a sentence's pattern opens ----------
+     Fixed to the bottom of the window, so it never lands on the sentence it is
+     explaining and never takes a tap meant for a word. It is drawn on the app's
+     own root (like the game's overlay), so the app's click handling reaches its
+     ✕. The app keeps ONE #readPop, so opening another sentence fills this same
+     sheet rather than stacking a second card, and the page is told to leave room
+     under it while it is up. */
+  function readShowSheet(html) {
+    var pop = document.getElementById("readPop");
+    if (!pop) {
+      pop = document.createElement("div");
+      pop.id = "readPop";
+      appEl.appendChild(pop);
+    }
+    pop.className = "read-sheet";
+    pop.innerHTML = html;
+    document.body.classList.add("sheet-open");
   }
   function readOpenWord(btn) {
     var unit = readUnit();
@@ -12212,6 +12809,9 @@ const READING_UNITS = [
       return;
     }
     var word = btn.getAttribute("data-word") || "";
+    /* the unit's clickableWords list decides — not the markup. A word that is
+       not on this unit's list can never open a meaning. */
+    if (!readIsClickable(unit, word)) return;
     var meaning = readMeaning(unit, word);
     /* say it, then show what it means. speakWord() is the app's own voice
        helper (the one behind the 🔊 buttons): it does nothing at all when the
@@ -12220,7 +12820,160 @@ const READING_UNITS = [
     readPopClose();
     btn.classList.add("on");
     state.readWord = word;
-    readShowPop(btn, word, meaning);
+    readShowPop(btn, readPopHTML(word, meaning));
+  }
+  /* Text with the given bit picked out, on a yellow highlight. `wholeWord` is
+     for the English: it stops "so" from biting into "so that", and the longest
+     word is tried first for the same reason. The Chinese lines are matched as
+     plain text — a Chinese phrase has no word boundaries to match on. */
+  function readBold(text, marks, wholeWord) {
+    var src = String(text == null ? "" : text);
+    var list = [].concat(marks == null ? [] : marks)
+      .filter(function (m) { return m; }).map(String)
+      .sort(function (a, b) { return b.length - a.length; });
+    if (!list.length) return esc(src);
+    var body = list.map(function (m) { return m.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|");
+    var re = new RegExp(wholeWord ? "\\b(" + body + ")\\b" : "(" + body + ")", "gi");
+    var out = "", last = 0, m;
+    while ((m = re.exec(src)) !== null) {
+      if (!m[0].length) { re.lastIndex++; continue; }     /* never loop for ever */
+      out += esc(src.slice(last, m.index)) +
+             '<b class="cmp-hl">' + esc(m[0]) + '</b>';
+      last = m.index + m[0].length;
+    }
+    return out + esc(src.slice(last));
+  }
+  /* the rows that compare two words, one under the other */
+  function readCompareHTML(item) {
+    var rows = item.compare || [];
+    if (!rows.length) return "";
+    return '<div class="sent-box">' +
+      (item.compareHead ? '<span class="sent-head">' + esc(item.compareHead) + '</span>' : '') +
+      rows.map(function (r, i) {
+        return '<div class="sent-cmp ' + (i % 2 ? "cmp-b" : "cmp-a") + '">' +
+          '<p class="cmp-head"><b class="cmp-word">' + esc(r.word == null ? "" : r.word) + '</b>' +
+            '<span class="cmp-eq">=</span>' + esc(r.zh == null ? "" : r.zh) + '</p>' +
+          (r.en ? '<p class="cmp-eg">' + readBold(r.en, r.enHl, true) + '</p>' : '') +
+          (r.cn ? '<p class="cmp-cn">（' + readBold(r.cn, r.cnHl, false) + '）</p>' : '') +
+        '</div>';
+      }).join("") + '</div>';
+  }
+  /* a list of examples, each with its Chinese underneath */
+  function readExamplesHTML(item) {
+    var rows = item.examples || [];
+    if (!rows.length) return "";
+    return '<div class="sent-box">' +
+      (item.exampleHead ? '<span class="sent-head">' + esc(item.exampleHead) + '</span>' : '') +
+      '<ul class="sent-ex">' + rows.map(function (r) {
+        return '<li>' +
+          '<p class="sent-eg">' + readBold(r.en, r.enHl, true) + '</p>' +
+          (r.cn ? '<p class="sent-eg-cn">（' + readBold(r.cn, r.cnHl, false) + '）</p>' : '') +
+        '</li>';
+      }).join("") + '</ul></div>';
+  }
+  /* the tips at the end of a card */
+  function readTipHTML(item) {
+    var tips = item.tip || [];
+    if (!tips.length) return "";
+    var bold = item.tipBold || [];
+    return '<div class="sent-box">' +
+      (item.tipHead ? '<span class="sent-head">' + esc(item.tipHead) + '</span>' : '') +
+      '<ul class="sent-tip">' + tips.map(function (t) {
+        return '<li>' + readBold(t, bold, true) + '</li>';
+      }).join("") + '</ul></div>';
+  }
+  /* ---------- the sentence-pattern card ----------
+     What a tap on an explainable sentence opens: the pattern with its parts
+     coloured, the Chinese explanation and one more example — and, for an entry
+     that asks for them, a comparison of two words and a few tips. The sentence
+     is NOT read aloud — a sentence is a grammar question, not a word to learn
+     by ear, and the learning happens in the explanation. The words INSIDE the
+     sentence are untouched: tapping one of them still opens its meaning and
+     says it, because the word's own button is what the tap lands on. */
+  /* a pattern written "A + B + C" — or with "/" between alternatives and ","
+     between clauses — drawn as one run of coloured parts with a dim sign between
+     them. One place builds it, so every card shows a pattern the same way. */
+  function readPatternHTML(pattern) {
+    var html = "", partNo = 0;
+    String(pattern == null ? "" : pattern).split(/([+\/,])/).forEach(function (tok) {
+      var t = String(tok).trim();
+      if (!t) return;
+      if (/^[+\/,]$/.test(t)) {
+        if (html) html += '<span class="sp-plus">' + esc(t) + '</span>';
+        return;
+      }
+      partNo++;
+      html += '<span class="sent-part sp-' + ((partNo - 1) % 5 + 1) + '">' + esc(t) + '</span>';
+    });
+    return html;
+  }
+  function readSentenceCard(item, shown) {
+    /* the pattern, part by part ... (see readPatternHTML) */
+    var pattern = readPatternHTML(item.pattern);
+    /* the explanation is one paragraph, or — when the entry gives several lines
+       — a bullet for each of them */
+    var explainHTML = "";
+    if (Array.isArray(item.explain)) {
+      explainHTML = '<ul class="sent-list">' + item.explain.map(function (line) {
+        return '<li>' + readBold(line, item.explainHl, false) + '</li>';
+      }).join("") + '</ul>';
+    } else if (item.explain) {
+      explainHTML = '<p class="sent-zh">' + readBold(item.explain, item.explainHl, false) + '</p>';
+    }
+    return '' +
+      /* the ✕ is outside .sheet-body on purpose: the card scrolls, the ✕ does not */
+      '<button type="button" class="read-pop-x" data-act="read-pop-close" aria-label="Close">✕</button>' +
+      '<div class="sheet-body">' +
+        /* the card is headed by its own title when it has one, and by the
+           sentence itself when it has not */
+        '<span class="read-pop-w">' + esc(item.title || shown) + '</span>' +
+        (pattern || explainHTML
+          ? '<div class="sent-box">' +
+              (item.patternHead ? '<span class="sent-head">' + esc(item.patternHead) + '</span>' : '') +
+              (pattern ? '<span class="sent-pat">' + pattern + '</span>' : '') +
+              explainHTML +
+            '</div>'
+          : '') +
+        (item.example
+          ? '<p class="sent-eg"><span class="sent-eg-tag">例：</span>' + esc(item.example) + '</p>' : '') +
+        readExamplesHTML(item) +
+        readCompareHTML(item) +
+        readTipHTML(item) +
+      '</div>';
+  }
+  function readSentenceItem(unit, index) {
+    var list = (unit && unit.sentencePatterns) || [];
+    var i = Number(index);
+    return (i >= 0 && i < list.length) ? list[i] : null;
+  }
+  function readOpenSentence(btn) {
+    /* the highlighter is for marking words: it never opens this card, exactly
+       as it never opens a meaning for a word that cannot be looked up */
+    if (state.readHighlighter) return;
+    var unit = readUnit();
+    if (!unit) return;
+    var item = readSentenceItem(unit, btn.getAttribute("data-sent"));
+    if (!item) return;
+    /* the card is headed with the sentence as the UNIT writes it (that is the
+       one the pattern and the explanation were written for); if the unit gives
+       no sentence, what is drawn on the page is used instead */
+    var shown = String(item.sentence == null ? "" : item.sentence).trim() ||
+      String(btn.textContent == null ? "" : btn.textContent).replace(/\s+/g, " ").trim();
+    /* Only the sentence that was open lets go — the sheet itself stays, and is
+       filled with the new pattern, so tapping a second sentence updates the one
+       sheet instead of stacking another card. */
+    readPopLetGo();
+    btn.classList.add("on");
+    readShowSheet(readSentenceCard(item, shown));
+  }
+  /* a tap on a word that is NOT on the unit's clickableWords list.
+     Nothing happens — no sound, no popup, no pronunciation — unless the
+     highlighter is on, and then the word is marked like any other: the
+     highlighter does not know or care about the unit's list. */
+  function readMarkWord(btn) {
+    if (!state.readHighlighter) return;
+    readPopClose();
+    readToggleMark(Number(btn.getAttribute("data-w")));
   }
   /* "Add to My Words" — the same storage the Dictionary uses (addMyWord), so
      reading words turn up in My Words and can be practised like any other.
@@ -12240,7 +12993,7 @@ const READING_UNITS = [
     }
     var card = btn.closest(".read-article");
     var open = card ? card.querySelector(".read-w.on") : null;
-    if (open) readShowPop(open, word, meaning);     /* now says "✓ In My Words" */
+    if (open) readShowPop(open, readPopHTML(word, meaning));   /* now says "✓ In My Words" */
   }
 
   /* ---------- the three screens ---------- */
@@ -12289,7 +13042,8 @@ const READING_UNITS = [
         '<div class="topbar-title"><span class="tt-main">' + esc(unit.title) + '</span>' +
           '<span class="tt-sub" id="readHint">' +
             (state.readHighlighter ? "Highlighter on — tap a word to mark or unmark it"
-                                   : "Tap any word to see its meaning") + '</span></div>' +
+                                   : (readHasWordList(unit) ? "Tap a dotted-line word to see its meaning"
+                                                            : "Tap any word to see its meaning")) + '</span></div>' +
         '<button type="button" class="hl-btn' + (state.readHighlighter ? " on" : "") + '"' +
           ' id="readHl" data-act="read-hl" aria-pressed="' +
           (state.readHighlighter ? "true" : "false") + '"' +
@@ -12459,6 +13213,11 @@ const READING_UNITS = [
   }
 
   function render() {
+    /* The pattern sheet is drawn on the app root, so a new screen would leave it
+       hanging over the page — and the room it asked the page to leave under it
+       would be left behind. Closing every card here is what used to happen by
+       itself when the card was drawn inside the article being replaced. */
+    readPopClose();
     var html = "";
     if (state.screen === "home") html = viewHome();
     else if (state.screen === "stickers") html = viewStickers();
@@ -13330,7 +14089,7 @@ const READING_UNITS = [
        and the 🔊 button is deliberately silent (the voice is enough). */
     if (act === "go-activity") playTone("tab");                    /* stage tabs: soft click */
     else if (act === "answer" || act === "tile" || act === "speak" ||
-             act === "speak-mine" ||
+             act === "speak-mine" || act === "read-mark" ||
              act === "undo" || act === "clear") { /* played where the action happens */ }
     else if (act !== "toggle-sound") playTone("click");            /* navigation: short click */
 
@@ -13396,6 +14155,11 @@ const READING_UNITS = [
       return;
     }
     if (act === "read-word") { readOpenWord(btn); return; }
+    /* a sentence marked as explainable: its pattern, with no pronunciation */
+    if (act === "read-sent") { readOpenSentence(btn); return; }
+    /* a word that is not on the unit's clickableWords list: silent, and nothing
+       happens at all unless the highlighter is on */
+    if (act === "read-mark") { readMarkWord(btn); return; }
     /* the highlighter switch: the mode flips, the button and the hint line are
        repainted in place — the page is NOT redrawn, so the clock is not
        disturbed and the learner does not lose their place in the article */
@@ -13661,6 +14425,34 @@ const READING_UNITS = [
       state.confirmReset = false;
       render();
     }
+  });
+
+  /* An explainable sentence is a span, not a button, so Enter and Space have to
+     be wired up by hand for a keyboard. The words inside it ARE buttons and keep
+     their own keys, so this only fires when the sentence itself has the focus. */
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return;
+    var el = e.target;
+    if (!el || !el.classList || !el.classList.contains("read-sent")) return;
+    e.preventDefault();
+    readOpenSentence(el);
+  });
+
+  /* A tap anywhere else closes an open meaning or pattern card — on the article
+     text beside it, on the page around it, anywhere. The card itself is left
+     alone, so "Add to My Words" and ✕ keep working, and so is the word or
+     sentence the card belongs to: that tap is the word's or the sentence's own
+     business, and its own handler has already dealt with it. */
+  document.addEventListener("click", function (e) {
+    if (!document.getElementById("readPop")) return;
+    var node = e.target;
+    while (node) {
+      if (node === document.getElementById("readPop")) return;      /* inside the card */
+      if (node.classList && (node.classList.contains("read-w") ||
+                             node.classList.contains("read-sent"))) return;   /* its owner */
+      node = node.parentNode;
+    }
+    readPopClose();
   });
 
   /* ================= START ================= */
